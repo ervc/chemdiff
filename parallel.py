@@ -46,7 +46,6 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 		my_cells = col.cells[0:js_per_rank+remain]
 	else:
 		my_cells = comm.recv(source=0,tag=rank*11)
-	print('rank',rank,f'I have {len(my_cells)} cells')
 
 	### Call astrochem to do the chemistry
 	cwd = os.getcwd()
@@ -60,7 +59,6 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 		else:
 			j = rank*js_per_rank+remain+my_j
 		dirr = f'{cwd}/r00/z{j:0>2}'
-		print('starting chem on cell',j)
 		cell.write_chem_inputs(chemtime,abs_err=abs_err,rel_err=rel_err,
 			f_net=network,f_input=dirr+'/input.ini',f_source=dirr+'/source.mdl')
 		subprocess.run(['astrochem','-q','input.ini'],cwd=dirr)
@@ -79,7 +77,6 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 	else:
 		for i in range(1,size):
 			col.cells[i*js_per_rank+remain:(i+1)*js_per_rank+remain] = comm.recv(source=i,tag=i*99)
-	print('rank',rank,' done with chem')
 
 	'''
 	once all the cells have finished chemistry send a signal to rank 0
@@ -89,11 +86,8 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 	'''
 	# first, all ranks except 0 send that they are done
 	if rank != 0:
-		print('rank',rank,' sending done to rank 0')
 		comm.send(True, dest=0,tag=rank*12)
-		print('rank',rank,' send to rank 0')
 	else:
-		print('rank 0 updating all_done array')
 		all_done[0] = True
 		for i in range(1,size):
 			all_done[i] = comm.recv(source=i,tag=i*12)
@@ -105,13 +99,11 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 				comm.send(False,dest=i,tag=i*13)
 	else:
 		wait = comm.recv(source=0,tag=13*rank)
-	print('got confirmation from rank 0')
 	# now everyone should be together having both sent and recieved the ok
 	while wait:
 		print('WAITING :: RANK',rank)
 		sleep(1)
 
-	print('done with chem')
 
 def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_height=1.):
 	'''
@@ -130,7 +122,6 @@ def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_hei
 	------
 	dict, update peb_comp dictionary
 	'''
-	print('growing grains')
 	nzs = col.ncells
 	for j in range(nzs):
 		cell = col.cells[j]
@@ -156,7 +147,6 @@ def do_diffusion(col):
 	----------
 	col : Column object
 	'''
-	print('diffusing')
 	nzs = col.ncells
 	col_abunds = col.get_abundance_array()
 	newarray = {}
