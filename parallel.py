@@ -60,7 +60,7 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 		else:
 			j = rank*js_per_rank+remain+my_j
 		dirr = f'{cwd}/r00/z{j:0>2}'
-                print('starting chem on cell',j)
+		print('starting chem on cell',j)
 		cell.write_chem_inputs(chemtime,abs_err=abs_err,rel_err=rel_err,
 			f_net=network,f_input=dirr+'/input.ini',f_source=dirr+'/source.mdl')
 		subprocess.run(['astrochem','-q','input.ini'],cwd=dirr)
@@ -79,7 +79,7 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 	else:
 		for i in range(1,size):
 			col.cells[i*js_per_rank+remain:(i+1)*js_per_rank+remain] = comm.recv(source=i,tag=i*99)
-        print('rank',rank,' done with chem')
+	print('rank',rank,' done with chem')
 
 	'''
 	once all the cells have finished chemistry send a signal to rank 0
@@ -87,15 +87,16 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 	I'm sure there is a better way to do this/this may not actually be necessary
 	But it doesn't take very long to go through this and it's a good safeguard
 	'''
-
 	# first, all ranks except 0 send that they are done
 	if rank != 0:
+		print('rank',rank,' sending done to rank 0')
 		comm.send(True, dest=0,tag=rank*12)
+		print('rank',rank,' send to rank 0')
 	else:
+		print('rank 0 updating all_done array')
 		all_done[0] = True
 		for i in range(1,size):
-			all_done[i] = comm.recv(source=1,tag=i*12)
-
+			all_done[i] = comm.recv(source=i,tag=i*12)
 	# now rank zero says "everyone is done!" and sends to go ahead
 	if rank == 0:
 		if all(all_done):
@@ -104,13 +105,13 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 				comm.send(False,dest=i,tag=i*13)
 	else:
 		wait = comm.recv(source=0,tag=13*rank)
-
+	print('got confirmation from rank 0')
 	# now everyone should be together having both sent and recieved the ok
 	while wait:
 		print('WAITING :: RANK',rank)
 		sleep(1)
 
-        print('done with chem')
+	print('done with chem')
 
 def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_height=1.):
 	'''
@@ -129,6 +130,7 @@ def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_hei
 	------
 	dict, update peb_comp dictionary
 	'''
+	print('growing grains')
 	nzs = col.ncells
 	for j in range(nzs):
 		cell = col.cells[j]
@@ -154,6 +156,7 @@ def do_diffusion(col):
 	----------
 	col : Column object
 	'''
+	print('diffusing')
 	nzs = col.ncells
 	col_abunds = col.get_abundance_array()
 	newarray = {}
@@ -165,7 +168,7 @@ def do_diffusion(col):
 			fp = 0
 			if j < nzs-1:
 				rhos_j1 = col.cells[j+1].rho
-				fp = 0.5*(thos_j+rhos_j1)*col.beta*(sp[j+1]-sp[j])/col.dz
+				fp = 0.5*(rhos_j+rhos_j1)*col.beta*(sp[j+1]-sp[j])/col.dz
 			elif j == nzs-1:
 				fp = 0.
 			if j==0:
@@ -206,7 +209,7 @@ def update_cells(col,opacity=1e3):
 		NCO += nco*col.dz
 		NH2 += nh2*col.dz
 		NH += nh*col.dz
-		tau += cell.rho*100*opactiry*col.dz*cell.dust_gas_ratio # 100*opacity because total opacity is 1/100 dust opacity
+		tau += cell.rho*100*opacity*col.dz*cell.dust_gas_ratio # 100*opacity because total opacity is 1/100 dust opacity
 		cell.NCO = NCO
 		cell.NH2 = NH2
 		cell.NH = NH
