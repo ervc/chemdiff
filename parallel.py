@@ -2,6 +2,7 @@ import numpy as np
 import subprocess
 import os
 from .constants import *
+from .wrapper import *
 from mpi4py import MPI
 from time import sleep
 
@@ -15,7 +16,7 @@ def mpi_initialize():
 	rank = comm.rank
 	return comm,size,rank
 
-def do_parallel_chemistry(col,size,time,touts,chemtime=500,
+def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 	network='network.chm',abs_err=1.e-20,rel_err=1e-10):
 	'''
 	Runs Astrochem in parallel
@@ -23,7 +24,9 @@ def do_parallel_chemistry(col,size,time,touts,chemtime=500,
 	PARAMETERS
 	----------
 	col : Column object to run astrochem on
+        comm : MPI.COMM_WORLD for mpi4py
 	size : int, number of processors to use
+        rank : int, the rank of the cpu working on this
 	time : float, the current time, check if output should be saved
 	touts : list, times for which to save outputs
 	astrochem_params : args to passed to run astrochem (see wrapper.write_chem_inputs)
@@ -43,19 +46,21 @@ def do_parallel_chemistry(col,size,time,touts,chemtime=500,
 		my_cells = col.cells[0:js_per_rank+remain]
 	else:
 		my_cells = comm.recv(source=0,tag=rank*11)
+	print('rank',rank,f'I have {len(my_cells)} cells')
 
 	### Call astrochem to do the chemistry
 	cwd = os.getcwd()
 	wait = True
 	if rank == 0:
 		all_done = np.zeros(size,dtype='bool')
-	for my_j,cells in enumerate(my_cells):
+	for my_j,cell in enumerate(my_cells):
 		# get the absolute j for each cells
 		if rank == 0:
 			j = my_j
 		else:
 			j = rank*js_per_rank+remain+my_j
 		dirr = f'{cwd}/r00/z{j:0>2}'
+                print('starting chem on cell',j)
 		cell.write_chem_inputs(chemtime,abs_err=abs_err,rel_err=rel_err,
 			f_net=network,f_input=dirr+'/input.ini',f_source=dirr+'/source.mdl')
 		subprocess.run(['astrochem','-q','input.ini'],cwd=dirr)
@@ -74,6 +79,7 @@ def do_parallel_chemistry(col,size,time,touts,chemtime=500,
 	else:
 		for i in range(1,size):
 			col.cells[i*js_per_rank+remain:(i+1)*js_per_rank+remain] = comm.recv(source=i,tag=i*99)
+        print('rank',rank,' done with chem')
 
 	'''
 	once all the cells have finished chemistry send a signal to rank 0
@@ -102,7 +108,9 @@ def do_parallel_chemistry(col,size,time,touts,chemtime=500,
 	# now everyone should be together having both sent and recieved the ok
 	while wait:
 		print('WAITING :: RANK',rank)
-		slepp(1)
+		sleep(1)
+
+        print('done with chem')
 
 def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_height=1.):
 	'''

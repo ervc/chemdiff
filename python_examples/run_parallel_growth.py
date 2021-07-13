@@ -148,7 +148,8 @@ for t in range(nchems):
 	time = (t+1)*chemtime
 
 	# do chemistry
-	do_parallel_chemistry(col,nproc,time,touts,chemtime=chemtime,network=chm)
+	do_parallel_chemistry(col,comm,nproc,rank,
+                              time,touts,chemtime=chemtime,network=chm)
 
 	# rank 0 will do the pebble growth, diffusion, and update the cells
 	goon = False
