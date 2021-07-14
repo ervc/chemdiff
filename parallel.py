@@ -63,7 +63,7 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 			f_net=network,f_input=dirr+'/input.ini',f_source=dirr+'/source.mdl')
 		subprocess.run(['astrochem','-q','input.ini'],cwd=dirr)
 		if float(time) in touts:
-			subprocess.run(['cp','astrochem_output.h5',f'astrochem_output_t{int(time):0>9}.mdl'],cwd=dirr)
+			subprocess.run(['cp','astrochem_output.h5',f'astrochem_output_t{int(time):0>9}.h5'],cwd=dirr)
 			subprocess.run(['cp','source.mdl',f'source_t{int(time):0>9}.mdl'],cwd=dirr)
 
 		# update cell abundances
