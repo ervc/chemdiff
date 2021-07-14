@@ -105,7 +105,7 @@ def do_parallel_chemistry(col,comm,size,rank,time,touts,chemtime=500,
 		sleep(1)
 
 
-def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_height=1.):
+def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_height=1.,prime_time=0.):
 	'''
 	Grows pebbles near the midplane with timescale from Birnsteil 2012
 
@@ -122,11 +122,13 @@ def grow_grains(col,peb_comp,time,grow_pebbles=True,timescale_factor=1.,grow_hei
 	------
 	dict, update peb_comp dictionary
 	'''
+        if not prime_time:
+                prime_time = 0.
 	nzs = col.ncells
 	for j in range(nzs):
 		cell = col.cells[j]
 		t_grow = timescale_factor/(cell.dust_gas_ratio*col.omega)
-		if cell.z/col.h <= grow_height and time >=0 and grow_pebbles:
+		if cell.z/col.h <= grow_height and time >=prime_time and grow_pebbles:
 			deps = -col.dt*sec/t_grow
 		else:
 			deps = 0
