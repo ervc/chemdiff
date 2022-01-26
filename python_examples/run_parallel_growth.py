@@ -63,33 +63,33 @@ o1618 = 500
 o1617 = 2600
 
 ### Bosman 2018
-# init_abuns = {
-# 	'H2' : 0.5,
-# 	'He' : 9.75e-2,
-# 	'NH3': 1.45e-6,
-# 	'H2O': 1.18e-4,
-# 	'CO' : 6.00e-5,
-# 	'N2' : 2.00e-5,
-# 	'CH4': 2.00e-6,
-# 	'CH3OH' : 1.00e-6,
-# 	'H2S' : 1.91e-8,
-# 	'CO2' : 5.00e-5,
-# 	'HCN' : 3.50e-7,
-# 	'grain' : 2.2e-12
-# }
-### Lyons and Young 2005
 init_abuns = {
 	'H2' : 0.5,
-	'He' : 0.16,
-	'CO' : 2e-4,
-	'H2O' : 2e-4,
+	'He' : 9.75e-2,
+	'NH3': 1.45e-6,
+	'H2O': 1.18e-4,
+	'CO' : 6.00e-5,
+	'N2' : 2.00e-5,
+	'CH4': 2.00e-6,
+	'CH3OH' : 1.00e-6,
+	'H2S' : 1.91e-8,
+	'CO2' : 5.00e-5,
+	'HCN' : 3.50e-7,
 	'grain' : 2.2e-12
 }
-### isotopes
-init_abuns['H2-18-O'] = init_abuns['H2O']/o1618
-init_abuns['H2-17-O'] = init_abuns['H2O']/o1617
-init_abuns['C-18-O'] = init_abuns['CO']/o1618
-init_abuns['C-17-O'] = init_abuns['CO']/o1617
+### Lyons and Young 2005
+# init_abuns = {
+# 	'H2' : 0.5,
+# 	'He' : 0.16,
+# 	'CO' : 2e-4,
+# 	'H2O' : 2e-4,
+# 	'grain' : 2.2e-12
+# }
+# ### isotopes
+# init_abuns['H2-18-O'] = init_abuns['H2O']/o1618
+# init_abuns['H2-17-O'] = init_abuns['H2O']/o1617
+# init_abuns['C-18-O'] = init_abuns['CO']/o1618
+# init_abuns['C-17-O'] = init_abuns['CO']/o1617
 
 # Physical params
 chi = 50
