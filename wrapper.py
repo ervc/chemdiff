@@ -154,7 +154,7 @@ class Cell(object):
 
 			f.write('[output]\n')
 			f.write(f'abundances = {abun_out}\n'+
-				'time_steps = 128\n'+
+				'time_steps = 64\n'+
 				'trace_routes = 0')
 
 		# print(f'Input written to {f_input}')
