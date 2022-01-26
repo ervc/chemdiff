@@ -39,6 +39,31 @@ This should include the path to the chm file for astrochem. An absolute path sho
 This is the name of the file to output pebble abundances to. As Pebbles from they sequester some amount of ice on them, this file will keep track of the total abundance on pebbles as a function of time.
 *default:* `pebfile = pebble_composition.out`
 
+`ti`
+
+Time to start the model in years.
+*default:* `ti = 0`
+
+`tf`
+
+Time to end the model in years.
+*default:* `tf = 1.e6`
+
+`touts`
+
+Times to save outputs in years. These should be multiples of your diffusion and/or chemical timestep.
+*default:* `touts = [1e3, 2e3, 3e3, ..., 9e3, 1e4, 2e4, ..., 9e4, 1e5, 1.5e5, 2e5, 2.5e5, ..., 9.5e5, 1e6]`
+
+`diff_dt`
+
+Diffusion timestep in years. For stability, this should be less than $\frac{1}{100}(\alpha\Omega_K)^{-1}$, see Van Clepper et al. 2022 for details.
+*default:* `diff_dt = 100`
+
+`chem_dt`
+
+Chemistry timestep in years. This should be greater than or equal to the diffusion timestep, and an integer multiple of the diffusion timestep.
+*default:* `chem_dt = 500`
+
 
 <!-- # Chemdiff
 
