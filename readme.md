@@ -2,6 +2,42 @@
 
 ## Overview
 
+Chemdiff is the python based user interface for the CANDY package. Chemdiff repeatedly calls Astrochem, while allowing for vertical diffusion and dynamic pebble growth and ice sequestration in a protoplanetary disk. For a details on the physical structure of the disk (i.e. temperature/density structure) see Van Clepper et al. 2022.
+
+At its core, chemdiff has three functions it calls repeatedly:
+1) Update Chemistry
+2) Diffuse Material
+3) Grow Pebbles
+
+These rely on two objects, located in the `wrapper.py` module: the Cell and a Column. Each Cell represents a small volume of constant density, temperature, composition, etc. located at some height above the midplane. A Column has a collection of Cells (default is 50 cells, ranging from midplane to 5 scale heights). Within a Column, material can be diffused between Cells. The `parallel.py` module contains functions to do these three steps, while the `run_parallel_growth.py` file located in the `python_examples/` directory contains a loop for these three functions.
+
+## Running chemdiff
+
+To run, make sure both chemdiff and astrochem are in your path, then place the `run_parallel_growth.py` and `cdinput.in` files into your desired directory and run:	
+	```python run_parallel_growth.py```
+or
+	```mpiexec python run_parallel_growth.py```
+An example sbatch submission script is also included.
+
+## Inputs
+
+The `run_parallel_growth.py` file is set to readin from `cdinput.in` file. The `cdinput.in` file should contain three sections labeled with a `#` at the start of the line: Model parameters (`# model`), Physical parameters (`# phys`), and intiail Abundances (`# abundances`).
+Default parameters are given in the `chemdiff_io` module, and are included here.
+
+### Model
+```chmfile```
+This should include the path to the chm file for astrochem. An absolute path should be used (i.e. starting from the root directory) so that even when astrochem is called in parallel from different directories it knows where to look.
+*default:* `chmfile = /astrochem/networks/umist12.chm`
+
+```pebfile```
+This is the name of the file to output pebble abundances to. As Pebbles from they sequester some amount of ice on them, this file will keep track of the total abundance on pebbles as a function of time.
+*default:* `pebfile = pebble_composition.out`
+
+
+<!-- # Chemdiff
+
+## Overview
+
 Chemdiff is a python-based 1-D astrochemical code used to calculate the abundances of chemical species in protoplanetary disks. The code can account for vertical diffusion of species within the disk and pebble growth in addition to the astrochemical methods built on top of the Astrochem Code [Maret & Bergin (2015)][1]. See the [Astrochem documentation][2] for details on the ODE solver used to solve the chemical networks. In addition to the Astrochem solver, Chemdiff includes photodissociation self-shielding of CO, H2, and isotopologues, hydrogenation reactions of grains, xray ionization reactions, and Reactions with excited states of H2. Details of each of these reactions is given in the [Reaction rate calculations](#reaction-rate-calculations) section.
 
 Chemdiff calculates diffusion and grain growth by defining a column at a given radial distance, $R$, from the central star with a given midplane temperature, $T_{mid}$, diffusion parameter, $\alpha$, a certain number of cells, $n_z$. Given this distance and midplane temperature, the column keplarian frequency, $\Omega$, sound speed, $c_s$, and scale height, $h$, are calculated (assuming a one solar mass star) using the formulas below. The column has a height of 5 scale heights, and is made of $n_z$ cells, each with a height of $\Delta z = 5/n_z$.
@@ -110,4 +146,4 @@ where $f_{j,t} = 1/\tau_{grow} = \Omega\epsilon_{j,t}$.
 [2]: <https://astrochem.readthedocs.io/en/latest/> (Astrochem documentation)
 [3]: <https://ui.adsabs.harvard.edu/abs/2001A%26A...371.1107A/abstract> (Aikawa & Herbst, 2001)
 [4]: <https://ui.adsabs.harvard.edu/abs/2018ApJ...864...78K/abstract> (Krijt et al., 2018)
-[5]: <https://ui.adsabs.harvard.edu/abs/2012A%26A...539A.148B/abstract> (Birnstiel et al., 2012)
+[5]: <https://ui.adsabs.harvard.edu/abs/2012A%26A...539A.148B/abstract> (Birnstiel et al., 2012) -->
