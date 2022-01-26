@@ -14,9 +14,13 @@ These rely on two objects, located in the `wrapper.py` module: the Cell and a Co
 ## Running chemdiff
 
 To run, make sure both chemdiff and astrochem are in your path, then place the `run_parallel_growth.py` and `cdinput.in` files into your desired directory and run:	
-	```python run_parallel_growth.py```
+
+	python run_parallel_growth.py
+
 or
-	```mpiexec python run_parallel_growth.py```
+
+	mpiexec python run_parallel_growth.py
+
 An example sbatch submission script is also included.
 
 ## Inputs
@@ -26,10 +30,12 @@ Default parameters are given in the `chemdiff_io` module, and are included here.
 
 ### Model
 ```chmfile```
+
 This should include the path to the chm file for astrochem. An absolute path should be used (i.e. starting from the root directory) so that even when astrochem is called in parallel from different directories it knows where to look.
 *default:* `chmfile = /astrochem/networks/umist12.chm`
 
 ```pebfile```
+
 This is the name of the file to output pebble abundances to. As Pebbles from they sequester some amount of ice on them, this file will keep track of the total abundance on pebbles as a function of time.
 *default:* `pebfile = pebble_composition.out`
 
