@@ -139,7 +139,7 @@ for j in reversed(range(nzs)):
 	NH2 += nh2*col.dz
 	NH += nh*col.dz
 	# optical depth
-	tau += rho*100*opacity*col.dz*dg0
+	tau += rho*opacity*col.dz*dg0
 
 	### CREATE THE CELL
 	col.cells[j] = Cell(r,z,chi=chi,cosmic=cosmic,grain_size=grain_size,dust_gas_ratio=dg0,

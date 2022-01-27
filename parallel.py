@@ -180,14 +180,14 @@ def do_diffusion(col):
                         col.cells[j].dust_gas_ratio = grain_abun2dg(newarray['grain'][j])
                         col.cells[j].abundances[spec] = newarray[spec][j]
 
-def update_cells(col,opacity=1e3):
+def update_cells(col,opacity=1e5):
         '''
         Update the cells after diffusion
 
         PARAMETERS
         ----------
         col : Column Object
-        opacity : total opacity of dust + gas
+        opacity : total dust opacity
         '''
         nzs = col.ncells
 
@@ -207,7 +207,7 @@ def update_cells(col,opacity=1e3):
                 NCO += nco*col.dz
                 NH2 += nh2*col.dz
                 NH += nh*col.dz
-                tau += cell.rho*100*opacity*col.dz*cell.dust_gas_ratio # 100*opacity because total opacity is 1/100 dust opacity
+                tau += cell.rho*opacity*col.dz*cell.dust_gas_ratio
                 cell.NCO = NCO
                 cell.NH2 = NH2
                 cell.NH = NH

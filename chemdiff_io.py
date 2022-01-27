@@ -23,7 +23,7 @@ def get_defaults():
 		'cosmic' : 1.3e-17,
 		'grain_size' : 0.1,
 		'dg0' : 0.01,
-		'opacity' : 1000,
+		'opacity' : 1e5,
 		'growth_timescale_factor' : 1.,
 		'growth_height' : 1.
 	}
