@@ -1,7 +1,7 @@
 def get_defaults():
 	# default model paramters
 	model_inputs = {
-		'chmfile' : '/candy/astrochem/networks/umist12.chm',
+		'chmfile' : '~/candy/astrochem/networks/umist12_x.chm',
 		'pebfile' : 'pebble_composition.out',
 		'ti' : 0.,
 		'tf' : 1e6,
