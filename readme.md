@@ -42,7 +42,7 @@ Default parameters are given in the `chemdiff_io` module, and are included here.
 ```chmfile```
 
 This should include the path to the chm file for astrochem. An absolute path should be used (i.e. starting from the root directory) so that even when astrochem is called in parallel from different directories it knows where to look.
-*default:* `chmfile = /astrochem/networks/umist12.chm`
+*default:* `chmfile = /candy/astrochem/networks/umist12.chm`
 
 ```pebfile```
 
