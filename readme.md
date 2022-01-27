@@ -64,6 +64,21 @@ Diffusion timestep in years. For stability, this should be less than $\frac{1}{1
 Chemistry timestep in years. This should be greater than or equal to the diffusion timestep, and an integer multiple of the diffusion timestep.
 *default:* `chem_dt = 500`
 
+### Phys
+`r`
+
+Heliocentric distance of the model. This defines the temperature and density of the cells following Van Clepper et al. 2022. Units are set in `r_units` parameter.
+*default:* `r = 30`
+
+`r_units`
+
+Units of `r`, options are 'au' or 'cm'
+*default:* `r_units = au`
+
+`alpha`
+
+Disk alpha viscosity parameter, defined such that the kinematic viscosity is given as $\nu = \alpha c_s H$ *&nu; = &alpha; c<sub>s</sub> H* (Shakura & Sunyaev 1973)
+
 
 <!-- # Chemdiff
 
