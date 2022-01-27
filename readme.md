@@ -56,7 +56,7 @@ Times to save outputs in years. These should be multiples of your diffusion and/
 
 `diff_dt`
 
-Diffusion timestep in years. For stability, this should be less than $\frac{1}{100}(\alpha\Omega_K)^{-1}$, see Van Clepper et al. 2022 for details.
+Diffusion timestep in years. For stability, this should be less than *(1/100)(&alpha;&Omega;<sub>K</sub>)<sup>-1</sup>* , see Van Clepper et al. 2022 for details.
 *default:* `diff_dt = 100`
 
 `chem_dt`
@@ -77,7 +77,52 @@ Units of `r`, options are 'au' or 'cm'
 
 `alpha`
 
-Disk alpha viscosity parameter, defined such that the kinematic viscosity is given as $\nu = \alpha c_s H$ *&nu; = &alpha; c<sub>s</sub> H* (Shakura & Sunyaev 1973)
+Disk alpha viscosity parameter, defined such that the kinematic viscosity is given as *&nu; = &alpha;c<sub>s</sub>H* (Shakura & Sunyaev 1973).
+*default:* `alpha = 1e-3`
+
+`chi`
+
+Unattenuated UV field strength in Draine Units (Draine 1978). This corresponds to the UV strength at the top of the disk.
+*default:* `chi = 50`
+
+`cosmic`
+
+Cosmic ray ionization rate in s<sup>-1</sup>.
+*default:* `cosmic = 1.3e-17`
+
+`grain_size`
+
+The radius of grains in microns.
+*default:* `grain_size = 0.1`
+
+`dg0`
+
+The initial small dust to gas mass ratio.
+*default:* `dg0 = 0.01`
+
+`opacity`
+
+The opacity of the dust in UV in units of cm<sup>2</sup>g<sup>-1</sup>.
+*default:* `opacity = 1.0e5`
+
+`growth_timescale_factor`
+
+Defines the length of the growth timescale for pebble formation in the disk. The timescale factor, *a* sets the pebble growth timescale as *&tau;<sub>grow</sub> = a/&Omega;&epsilon;*. See Van Clepper et al. 2022 for details.
+*default:* `growth_timescale_factor = 1`
+
+`growth_height`
+
+The height in scale heights above the midplane over which pebbles should grow. i.e. a growth height of 1 means that small dust will coagulate into larger pebbles in cells with 0&le;z&le;H. If you would like to not grow pebbles (i.e. diffusion only), the growth height can be set to zero.
+*default:* `growth_height = 1`
+
+### abundances
+
+Initial abundances relative to total number of hydrogen atoms. Default values are modified from Bosman et al. 2018 and are given in table 1 of Van Clepper et al. 2022. Default abundances are only used if no abundances are given in `cdinput.in`. If any abundances are listed in this section, the initial abundance of all other species is zero. Molecular species can be listed in this in the same format as other parameters, i.e.
+
+	H2 = 0.5
+	CO = 6.0e-5
+	grain = 2.2e-12
+
 
 
 <!-- # Chemdiff
