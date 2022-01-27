@@ -107,7 +107,7 @@ The opacity of the dust in UV in units of cm<sup>2</sup>g<sup>-1</sup>.
 
 `growth_timescale_factor`
 
-Defines the length of the growth timescale for pebble formation in the disk. The timescale factor, *a* sets the pebble growth timescale as *&tau;<sub>grow</sub> = a/&Omega;&epsilon;*. See Van Clepper et al. 2022 for details.
+Defines the length of the growth timescale for pebble formation in the disk. The timescale factor, *a*, sets the pebble growth timescale as *&tau;<sub>grow</sub> = a/&Omega;&epsilon;*. See Van Clepper et al. 2022 for details.
 *default:* `growth_timescale_factor = 1`
 
 `growth_height`
