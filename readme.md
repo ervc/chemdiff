@@ -23,6 +23,16 @@ or
 
 An example sbatch submission script is also included.
 
+The outputs will be placed in a subdirectory `./r00/` from where `run_parallel_growth.py` was run. This will take up a lot of space. the `get_all_abundances.py` module in the `post_processing` subdirectory will consolidate the abundances, species, times, heights, gas densities, and visual extinctions into an npz file. Just call
+
+	python get_all_abundances.py {path to directory}
+
+You can also do
+
+	python get_all_abundances.py -h
+
+to see more options. Once this has been called the `./r00/` directory can safely be removed.
+
 ## Inputs
 
 The `run_parallel_growth.py` file is set to readin from `cdinput.in` file. The `cdinput.in` file should contain three sections labeled with a `#` at the start of the line: Model parameters (`# model`), Physical parameters (`# phys`), and intiail Abundances (`# abundances`).
