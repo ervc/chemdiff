@@ -162,7 +162,8 @@ for t in range(nchems):
 		for diff_loop in range(ndiffs):
 			# change grain abundances
 			peb_comp = grow_grains(col,peb_comp,time,grow_pebbles,
-									timescale_factor = phys_params['growth_timescale_factor'])
+									timescale_factor = phys_inputs['growth_timescale_factor'],
+									grow_height = phys_inputs['growth_height'])
 			do_diffusion(col)
 		update_cells(col,opacity)
 
