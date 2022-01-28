@@ -3,7 +3,7 @@
 ! comment lines begin with '!'
 
 # model
-chmfile = /astrochem/networks/umist12_x.chm
+chmfile = /candy/astrochem/networks/umist12_x.chm
 diff_dt = 100
 chem_dt = 500
 
