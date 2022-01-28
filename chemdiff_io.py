@@ -1,7 +1,7 @@
 def get_defaults():
 	# default model paramters
 	model_inputs = {
-		'chmfile' : '~/candy/astrochem/networks/umist12_x.chm',
+		'chmfile' : '/home/candy/astrochem/networks/umist12_x.chm',
 		'pebfile' : 'pebble_composition.out',
 		'ti' : 0.,
 		'tf' : 1e6,
@@ -79,7 +79,7 @@ def read_infile(infile = 'cdinput.in'):
 			elif line != '\n':
 				key,_,val = line.split()
 				if switch == 'model':
-					if key = 'touts':
+					if key == 'touts':
 						tout_list_str = line.split()[2:]
 						val = parse_list(tout_list_str)
 					model_inputs[key] = val
