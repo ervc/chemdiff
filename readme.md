@@ -33,6 +33,8 @@ You can also do
 
 to see more options. Once this has been called the `./r00/` directory can safely be removed.
 
+*Note:* To include self-shielding, the included `data_coselfs_iso.dat` file must be included in the directory from which you are running CANDY.
+
 ## Inputs
 
 The `run_parallel_growth.py` file is set to readin from `cdinput.in` file. The `cdinput.in` file should contain three sections labeled with a `#` at the start of the line: Model parameters (`# model`), Physical parameters (`# phys`), and intiail Abundances (`# abundances`).
