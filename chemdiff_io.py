@@ -1,7 +1,7 @@
 def get_defaults():
 	# default model paramters
 	model_inputs = {
-		'chmfile' : 'umist12.chm',
+		'chmfile' : '/home/candy/astrochem/networks/umist12_x.chm',
 		'pebfile' : 'pebble_composition.out',
 		'ti' : 0.,
 		'tf' : 1e6,
@@ -9,7 +9,7 @@ def get_defaults():
 				   1.0e4,2.0e4,3.0e4,4.0e4,5.0e4,6.0e4,7.0e4,8.0e4,9.0e4,
 				   1.0e5,1.5e5,2.0e5,2.5e5,3.0e5,3.5e5,4.0e5,4.5e5,5.0e5,
 				   5.5e5,6.0e5,6.5e5,7.0e5,7.5e5,8.0e5,8.5e5,9.0e5,9.5e5,
-				   1e6],
+				   1.0e6],
 		'diff_dt' : 100,
 		'chem_dt' : 500,
 	}
@@ -23,7 +23,7 @@ def get_defaults():
 		'cosmic' : 1.3e-17,
 		'grain_size' : 0.1,
 		'dg0' : 0.01,
-		'opacity' : 1000,
+		'opacity' : 1e5,
 		'growth_timescale_factor' : 1.,
 		'growth_height' : 1.
 	}
@@ -46,24 +46,47 @@ def get_defaults():
 
 	return model_inputs, phys_inputs, abundances
 
+def parse_list(list_str,dtype=float):
+	l = []
+	startlist = None
+	endlist = None
+	startlist = list_str.index('[')
+	endlist = list_str.index(']')
+
+	inlist = list_str[startlist+1:endlist]
+	for item in inlist.split(','):
+		l.append(dtype(item))
+
+	return l
+
+
 def read_infile(infile = 'cdinput.in'):
+	# get default values first
 	model_inputs,phys_inputs,abundances = get_defaults()
 	with open(infile,'r') as f:
 		switch = None
 		for line in f:
-			print(line)
+			# skip comments
 			if line[0] == '!':
 				continue
+			# hash indicated header line
 			if line[0] == '#':
 				switch = line.split()[-1]
+				# if abundances are being read in
+				# then ignore any default abundances
+				if switch == 'abundances':
+					abundances = {}
 			elif line != '\n':
 				key,_,val = line.split()
 				if switch == 'model':
+					if key == 'touts':
+						tout_list_str = line.split()[2:]
+						val = parse_list(tout_list_str)
 					model_inputs[key] = val
 				elif switch == 'phys':
 					phys_inputs[key] = val
 				elif switch == 'abundances':
-					abundances[key] = val
+					abundances[key] = float(val)
 
 	return model_inputs, phys_inputs, abundances
 

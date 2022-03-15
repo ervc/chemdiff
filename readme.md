@@ -2,6 +2,145 @@
 
 ## Overview
 
+Chemdiff is the python based user interface for the CANDY package. Chemdiff repeatedly calls Astrochem, while allowing for vertical diffusion and dynamic pebble growth and ice sequestration in a protoplanetary disk. For a details on the physical structure of the disk (i.e. temperature/density structure) see Van Clepper et al. 2022.
+
+At its core, chemdiff has three functions it calls repeatedly:
+1) Update Chemistry
+2) Diffuse Material
+3) Grow Pebbles
+
+These rely on two objects, located in the `wrapper.py` module: the Cell and a Column. Each Cell represents a small volume of constant density, temperature, composition, etc. located at some height above the midplane. A Column has a collection of Cells (default is 50 cells, ranging from midplane to 5 scale heights). Within a Column, material can be diffused between Cells. The `parallel.py` module contains functions to do these three steps, while the `run_parallel_growth.py` file located in the `python_examples/` directory contains a loop for these three functions.
+
+## Running chemdiff
+
+To run, make sure both chemdiff and astrochem are in your path, then place the `run_parallel_growth.py` and `cdinput.in` files into your desired directory and run:	
+
+	python run_parallel_growth.py
+
+or
+
+	mpiexec python run_parallel_growth.py
+
+An example sbatch submission script is also included.
+
+The outputs will be placed in a subdirectory `./r00/` from where `run_parallel_growth.py` was run. This will take up a lot of space. the `get_all_abundances.py` module in the `post_processing` subdirectory will consolidate the abundances, species, times, heights, gas densities, and visual extinctions into an npz file. Just call
+
+	python get_all_abundances.py {path to directory}
+
+You can also do
+
+	python get_all_abundances.py -h
+
+to see more options. Once this has been called the `./r00/` directory can safely be removed.
+
+*Note:* To include self-shielding, the included `data_coselfs_iso.dat` file must be included in the directory from which you are running CANDY.
+
+## Inputs
+
+The `run_parallel_growth.py` file is set to readin from `cdinput.in` file. The `cdinput.in` file should contain three sections labeled with a `#` at the start of the line: Model parameters (`# model`), Physical parameters (`# phys`), and intiail Abundances (`# abundances`).
+Default parameters are given in the `chemdiff_io` module, and are included here.
+
+### Model
+```chmfile```
+
+This should include the path to the chm file for astrochem. An absolute path should be used (i.e. starting from the root directory) so that even when astrochem is called in parallel from different directories it knows where to look.
+*default:* `chmfile = /candy/astrochem/networks/umist12.chm`
+
+```pebfile```
+
+This is the name of the file to output pebble abundances to. As Pebbles from they sequester some amount of ice on them, this file will keep track of the total abundance on pebbles as a function of time.
+*default:* `pebfile = pebble_composition.out`
+
+`ti`
+
+Time to start the model in years.
+*default:* `ti = 0`
+
+`tf`
+
+Time to end the model in years.
+*default:* `tf = 1.e6`
+
+`touts`
+
+Times to save outputs in years. These should be multiples of your diffusion and/or chemical timestep.
+*default:* `touts = [1e3, 2e3, 3e3, ..., 9e3, 1e4, 2e4, ..., 9e4, 1e5, 1.5e5, 2e5, 2.5e5, ..., 9.5e5, 1e6]`
+
+`diff_dt`
+
+Diffusion timestep in years. For stability, this should be less than *(1/100)(&alpha;&Omega;<sub>K</sub>)<sup>-1</sup>* , see Van Clepper et al. 2022 for details.
+*default:* `diff_dt = 100`
+
+`chem_dt`
+
+Chemistry timestep in years. This should be greater than or equal to the diffusion timestep, and an integer multiple of the diffusion timestep.
+*default:* `chem_dt = 500`
+
+### Phys
+`r`
+
+Heliocentric distance of the model. This defines the temperature and density of the cells following Van Clepper et al. 2022. Units are set in `r_units` parameter.
+*default:* `r = 30`
+
+`r_units`
+
+Units of `r`, options are 'au' or 'cm'
+*default:* `r_units = au`
+
+`alpha`
+
+Disk alpha viscosity parameter, defined such that the kinematic viscosity is given as *&nu; = &alpha;c<sub>s</sub>H* (Shakura & Sunyaev 1973).
+*default:* `alpha = 1e-3`
+
+`chi`
+
+Unattenuated UV field strength in Draine Units (Draine 1978). This corresponds to the UV strength at the top of the disk.
+*default:* `chi = 50`
+
+`cosmic`
+
+Cosmic ray ionization rate in s<sup>-1</sup>.
+*default:* `cosmic = 1.3e-17`
+
+`grain_size`
+
+The radius of grains in microns.
+*default:* `grain_size = 0.1`
+
+`dg0`
+
+The initial small dust to gas mass ratio.
+*default:* `dg0 = 0.01`
+
+`opacity`
+
+The opacity of the dust in UV in units of cm<sup>2</sup>g<sup>-1</sup>.
+*default:* `opacity = 1.0e5`
+
+`growth_timescale_factor`
+
+Defines the length of the growth timescale for pebble formation in the disk. The timescale factor, *a*, sets the pebble growth timescale as *&tau;<sub>grow</sub> = a/&Omega;&epsilon;*. See Van Clepper et al. 2022 for details.
+*default:* `growth_timescale_factor = 1`
+
+`growth_height`
+
+The height in scale heights above the midplane over which pebbles should grow. i.e. a growth height of 1 means that small dust will coagulate into larger pebbles in cells with 0&le;z&le;H. If you would like to not grow pebbles (i.e. diffusion only), the growth height can be set to zero.
+*default:* `growth_height = 1`
+
+### abundances
+
+Initial abundances relative to total number of hydrogen atoms. Default values are modified from Bosman et al. 2018 and are given in table 1 of Van Clepper et al. 2022. Default abundances are only used if no abundances are given in `cdinput.in`. If any abundances are listed in this section, the initial abundance of all other species is zero. Molecular species can be listed in this in the same format as other parameters, i.e.
+
+	H2 = 0.5
+	CO = 6.0e-5
+	grain = 2.2e-12
+
+
+
+<!-- # Chemdiff
+
+## Overview
+
 Chemdiff is a python-based 1-D astrochemical code used to calculate the abundances of chemical species in protoplanetary disks. The code can account for vertical diffusion of species within the disk and pebble growth in addition to the astrochemical methods built on top of the Astrochem Code [Maret & Bergin (2015)][1]. See the [Astrochem documentation][2] for details on the ODE solver used to solve the chemical networks. In addition to the Astrochem solver, Chemdiff includes photodissociation self-shielding of CO, H2, and isotopologues, hydrogenation reactions of grains, xray ionization reactions, and Reactions with excited states of H2. Details of each of these reactions is given in the [Reaction rate calculations](#reaction-rate-calculations) section.
 
 Chemdiff calculates diffusion and grain growth by defining a column at a given radial distance, $R$, from the central star with a given midplane temperature, $T_{mid}$, diffusion parameter, $\alpha$, a certain number of cells, $n_z$. Given this distance and midplane temperature, the column keplarian frequency, $\Omega$, sound speed, $c_s$, and scale height, $h$, are calculated (assuming a one solar mass star) using the formulas below. The column has a height of 5 scale heights, and is made of $n_z$ cells, each with a height of $\Delta z = 5/n_z$.
@@ -110,4 +249,4 @@ where $f_{j,t} = 1/\tau_{grow} = \Omega\epsilon_{j,t}$.
 [2]: <https://astrochem.readthedocs.io/en/latest/> (Astrochem documentation)
 [3]: <https://ui.adsabs.harvard.edu/abs/2001A%26A...371.1107A/abstract> (Aikawa & Herbst, 2001)
 [4]: <https://ui.adsabs.harvard.edu/abs/2018ApJ...864...78K/abstract> (Krijt et al., 2018)
-[5]: <https://ui.adsabs.harvard.edu/abs/2012A%26A...539A.148B/abstract> (Birnstiel et al., 2012)
+[5]: <https://ui.adsabs.harvard.edu/abs/2012A%26A...539A.148B/abstract> (Birnstiel et al., 2012) -->
