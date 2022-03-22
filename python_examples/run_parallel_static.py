@@ -54,11 +54,9 @@ chemtime = float(model_inputs['chem_dt'])
 touts = model_inputs['touts']
 nts = len(touts)
 nchems = int(tf/chemtime)
-ndiffs = int(chemtime/dt)
 
 # create the column
 col = Column(r,tmid,alpha,nzs)
-col.set_diff_params(dt)
 h = col.h
 
 ############# INITIALIZE THE CELLS #############
@@ -126,38 +124,6 @@ for t in range(nchems):
 	# do chemistry
 	do_parallel_chemistry(col,comm,nproc,rank,
                               time,touts,chemtime=chemtime,network=chm)
-
-	# rank 0 will do the pebble growth, diffusion, and update the cells
-	goon = False
-	if rank == 0:
-		for diff_loop in range(ndiffs):
-			# change grain abundances
-			peb_comp = grow_grains(col,peb_comp,time,grow_pebbles,
-									timescale_factor = phys_inputs['growth_timescale_factor'],
-									grow_height = phys_inputs['growth_height'])
-			do_diffusion(col)
-		update_cells(col,opacity)
-
-		if float(time) in touts:
-			print(time)
-			col_abunds = col.get_abundance_array()
-			with open(f_pebout,'a') as f:
-				for spec in peb_comp:
-					peb_comp_norm = peb_comp[spec]/col.cells[0].NH
-					f.write(f'{time}    {spec}    {peb_comp_norm:.10e}\n')
-
-		goon = True
-		# send the 'go on' signal and the updated column to other ranks
-		for i in range(1,nproc):
-			comm.send(True,dest=i,tag=15*i)
-			comm.send(col,dest=i,tag=155*i)
-	else:
-		goon = comm.recv(source=0,tag=15*rank)
-		col = comm.recv(source=0,tag=155*rank)
-
-	while not goon:
-		sleep(1)
-		print('WAITING :: RANK ',rank)
 
 
 ##################### TIMER ####################
