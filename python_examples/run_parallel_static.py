@@ -125,6 +125,27 @@ for t in range(nchems):
 	do_parallel_chemistry(col,comm,nproc,rank,
                               time,touts,chemtime=chemtime,network=chm)
 
+	# rank 0 will update the cell column densities
+	goon = False
+	if rank == 0:
+		update_cells(col,opacity)
+
+		if float(time) in touts:
+			print(time)
+
+		goon = True
+		# send the 'go on' signal and the updated column to other ranks
+		for i in range(1,nproc):
+			comm.send(True,dest=i,tag=15*i)
+			comm.send(col,dest=i,tag=155*i)
+	else:
+		goon = comm.recv(source=0,tag=15*rank)
+		col = comm.recv(source=0,tag=155*rank)
+
+	while not goon:
+		sleep(1)
+		print('WAITING :: RANK ',rank)
+
 
 ##################### TIMER ####################
 if rank == 0:
