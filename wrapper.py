@@ -100,7 +100,7 @@ class Cell(object):
 
 	def __init__(self,r,z,
 			chi=1,cosmic=1.3e-17,grain_size=0.1,dust_gas_ratio=0.01,
-			av=1,rho=1e10,Tgas=50,Tdust=50,xray=0,NCO=1.,NH2=1.,NH=1.,
+			av=1,rho=1e10,Tgas=50,Tdust=50,xray=0,NCO=1.,NH2=1.,NHD=1.,NH=1.,
 			abundances = {}):
 		self.r = r # cm
 		self.z = z # cm
@@ -119,6 +119,7 @@ class Cell(object):
 		self.xray = xray # s-1
 		self.NCO = NCO # cm-2
 		self.NH2 = NH2 # cm-2
+		self.NHD = NHD # cm-2
 		self.NH = NH # cm-2
 
 		self.abundances = dict(abundances)
@@ -160,8 +161,8 @@ class Cell(object):
 		# print(f'Input written to {f_input}')
 
 		with open(f_source,'w') as f:
-			f.write('# self Av[mag] n(H)[cm-3] Tgas[K] Tdust[K] NCO[cm-2] NH2[cm-2] xray-ion[s-1] R[au] Z[au]\n')
-			f.write(f'0    {self.av:.3e}    {self.nh:.3e}    {self.Tgas:.3e}    {self.Tdust:.3e}    {self.NCO:.3e}    {self.NH2:.3e}    {self.xray:.3e}    {self.r/au:.2f}    {self.z/au:.2f}')
+			f.write('# self Av[mag] n(H)[cm-3] Tgas[K] Tdust[K] NCO[cm-2] NH2[cm-2] NHD[cm-2] xray-ion[s-1] R[au] Z[au]\n')
+			f.write(f'0    {self.av:.3e}    {self.nh:.3e}    {self.Tgas:.3e}    {self.Tdust:.3e}    {self.NCO:.3e}    {self.NH2:.3e}    {self.NHD:.3e}    {self.xray:.3e}    {self.r/au:.2f}    {self.z/au:.2f}')
 
 		# print(f'Source written to {f_source}')
 
