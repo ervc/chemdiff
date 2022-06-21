@@ -85,6 +85,7 @@ if rank == 0:
 # set column densities to zero
 NCO = 0.
 NH2 = 0.
+NHD = 0.
 NH = 0.
 tau = 0.
 for j in reversed(range(nzs)):
@@ -106,15 +107,19 @@ for j in reversed(range(nzs)):
 	nh2 = 0
 	if 'H2' in init_abuns:
 		nh2 = init_abuns['H2']*nh
+	nhd = 0
+	if 'HD' in init_abuns:
+		nhd = init_abuns['HD']*nh
 	NCO += nco*col.dz
 	NH2 += nh2*col.dz
+	NHD += nhd*col.dz
 	NH += nh*col.dz
 	# optical depth
 	tau += rho*opacity*col.dz*dg0
 
 	### CREATE THE CELL
 	col.cells[j] = Cell(r,z,chi=chi,cosmic=cosmic,grain_size=grain_size,dust_gas_ratio=dg0,
-		av=tau/3.02,rho=rho,Tgas=temp,Tdust=temp,xray=xray,NCO=NCO,NH2=NH2,NH=NH,
+		av=tau/3.02,rho=rho,Tgas=temp,Tdust=temp,xray=xray,NCO=NCO,NH2=NH2,NHD=NHD,NH=NH,
 		abundances = dict(init_abuns))
 
 ################ MAIN LOOP #####################

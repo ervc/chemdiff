@@ -102,7 +102,7 @@ if rank == 0:
                 with open(f'./r00/z{j:0>2}/source_t{int(ti):0>9}.mdl','r') as f:
                         f.readline()
                         cell_params = f.readline().split()
-                av,nh,tgas,tdust,NCO,NH2,xray = list(map(float,cell_params[1:-2]))
+                av,nh,tgas,tdust,NCO,NH2,NHD,xray = list(map(float,cell_params[1:-2]))
 
                 # read in abundances from last astrochem output
                 cell_abuns = get_final_abuns(f'./r00/z{j:0>2}/astrochem_output_t{int(ti):0>9}.h5')
@@ -117,7 +117,7 @@ if rank == 0:
                 NH += nh*col.dz
                 col.cells[j] = Cell(r,z,chi=chi,cosmic=cosmic,grain_size=grain_size,
                                     dust_gas_ratio=dg,av=av,rho=mbar*nh/2,Tgas=tgas,
-                                    Tdust=tdust,xray=xray,NCO=NCO,NH2=NH2,NH=NH,
+                                    Tdust=tdust,xray=xray,NCO=NCO,NH2=NH2,NHD=NHD,NH=NH,
                                     abundances = dict(cell_abuns))
 if rank == 0:
         for i in range(1,nproc):
