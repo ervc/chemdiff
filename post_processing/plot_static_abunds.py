@@ -4,7 +4,7 @@ import chemdiff as cd
 import argparse
 
 NZS = 50
-DZ = 5/NZS
+DZ = 5/50
 ZS = [j*DZ + 0.5*DZ for j in range(NZS)]
 
 R = 30
@@ -87,6 +87,14 @@ def main(args):
 				else:
 					x[spec] = [X]
 					y[spec] = [Y]
+				dspec = get_deuterated_form(spec)
+				X = abundict[dspec][-1]
+				if dspec in x:
+					x[dspec].append(X)
+					y[dspec].append(Y)
+				else:
+					x[dspec] = [X]
+					y[dspec] = [Y]
 
 
 		elif args.xaxis=='HD_to_H2':
@@ -137,7 +145,9 @@ def main(args):
 
 	fig,ax = plt.subplots()
 	if args.xaxis=='abund':
-		for spec in args.species:
+		print(x)
+		print(y)
+		for spec in list(x.keys()):
 			ax.plot(x[spec],y[spec],label=spec)
 	elif args.xaxis=='HD_to_H2':
 		ax.plot(x,y)
@@ -147,9 +157,9 @@ def main(args):
 			ax.plot(x[spec],y[spec],label=label)
 		ax.plot(x['tot'],y['tot'],label='Total')
 	title = f'R = {R} au\nt = {args.time:.1e} yr'
-	ax.set(xscale='log',xlabel=args.xaxis,ylabel=args.yaxis,title=title)
+	ax.set(xscale='log',xlabel=args.xaxis,ylabel=args.yaxis,title=title,ylim=(0,5))
 	ax.legend()
-	plt.savefig(f'{args.directory}/h3test_{args.xaxis}.png',bbox_inches='tight')
+	plt.savefig(f'{args.directory}/shieldtest_{args.xaxis}.png',bbox_inches='tight')
 	plt.show()
 
 
