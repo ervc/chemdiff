@@ -194,18 +194,23 @@ def update_cells(col,opacity=1e5):
         NCO = 0.
         NH2 = 0.
         NH = 0.
+        NHD = 0.
         tau = 0.
         for j in reversed(range(nzs)):
                 cell = col.cells[j]
                 nh = cell.nh
-                nco = 0
+                nco = 0.
+                nhd = 0.
                 if 'CO' in list(cell.abundances.keys()):
                         nco = cell.abundances['CO']*nh
                 nh2 = 0
                 if 'H2' in list(cell.abundances.keys()):
                         nh2 = cell.abundances['H2']*nh
+                if 'HD' in list(cell.abundances.keys()):
+                        nhd = cell.abundances['HD']*nh
                 NCO += nco*col.dz
                 NH2 += nh2*col.dz
+                NHD += nhd*col.dz
                 NH += nh*col.dz
                 tau += cell.rho*opacity*col.dz*cell.dust_gas_ratio
                 cell.NCO = NCO
