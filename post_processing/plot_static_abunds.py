@@ -26,6 +26,9 @@ def get_deuterated_form(spec):
 		newspec = spec[:hindex]+'D'+spec[hindex+1]
 	return newspec
 
+def get_ice_form(spec):
+	return 'grain'+spec
+
 def count_hydrogen(spec):
 	if 'H' not in spec:
 		return 0
@@ -57,6 +60,7 @@ def format_directory(dir_name):
 def main(args):
 	dirr = format_directory(args.directory)
 	specs = args.species
+	print(args.directory.split('/')[-1])
 
 	# x and y dictionaries for each species
 	if args.xaxis=='abund':
@@ -87,7 +91,8 @@ def main(args):
 				else:
 					x[spec] = [X]
 					y[spec] = [Y]
-				dspec = get_deuterated_form(spec)
+				# dspec = get_deuterated_form(spec)
+				dspec = get_ice_form(spec)
 				X = abundict[dspec][-1]
 				if dspec in x:
 					x[dspec].append(X)
@@ -142,13 +147,13 @@ def main(args):
 
 
 
-
+	cmap = plt.get_cmap('viridis',len(specs))
 	fig,ax = plt.subplots()
 	if args.xaxis=='abund':
-		print(x)
-		print(y)
-		for spec in list(x.keys()):
-			ax.plot(x[spec],y[spec],label=spec)
+		for k,spec in enumerate(specs):
+			ax.plot(x[spec],y[spec],label=spec,c=cmap(k))
+			dspec = get_ice_form(spec)
+			ax.plot(x[dspec],y[dspec],label=dspec,c=cmap(k),ls='--')
 	elif args.xaxis=='HD_to_H2':
 		ax.plot(x,y)
 	elif args.xaxis=='D_to_H':
@@ -156,7 +161,8 @@ def main(args):
 			label=f'[D/H]_{spec}'
 			ax.plot(x[spec],y[spec],label=label)
 		ax.plot(x['tot'],y['tot'],label='Total')
-	title = f'R = {R} au\nt = {args.time:.1e} yr'
+	
+	title = f'{args.directory.split("/")[-1]}\nR = {R} au\nt = {args.time:.1e} yr'
 	ax.set(xscale='log',xlabel=args.xaxis,ylabel=args.yaxis,title=title,ylim=(0,5))
 	ax.legend()
 	plt.savefig(f'{args.directory}/shieldtest_{args.xaxis}.png',bbox_inches='tight')
